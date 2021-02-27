@@ -1,11 +1,5 @@
 import SwiftUI
 import AVFoundation
-import UIKit
-import GLKit
-import OpenGLES
-import CoreImage
-import CoreMedia
-
 
 struct CameraPreview_Previews: PreviewProvider {
     static var previews: some View {
