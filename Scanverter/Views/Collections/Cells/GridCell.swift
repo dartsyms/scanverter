@@ -2,12 +2,12 @@ import SwiftUI
 
 struct GridCell_Previews: PreviewProvider {
     static var previews: some View {
-        GridCell(dataSource: GridCellDataSource(folder: Folder(name: "TestFolder", date: Date(), isPasswordProtected: false, uid: UUID())))
+        GridCell(dataSource: FolderCellDataSource(folder: Folder(name: "TestFolder", date: Date(), isPasswordProtected: false, uid: UUID())))
     }
 }
 
 struct GridCell: View {
-    @StateObject var dataSource: GridCellDataSource
+    @StateObject var dataSource: FolderCellDataSource
     
     @State private var numberOfItems: Int = 4
     

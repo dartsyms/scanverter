@@ -1,6 +1,6 @@
 import Combine
 
-final class GridCellDataSource: ObservableObject {
+final class FolderCellDataSource: ObservableObject {
     @Published private(set) var folder: Folder
     
     init(folder: Folder) {

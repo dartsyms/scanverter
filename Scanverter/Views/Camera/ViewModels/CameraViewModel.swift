@@ -9,9 +9,17 @@ final class CameraViewModel: ObservableObject {
     @Published var showAlertError = false
     @Published var isFlashOn = false
     @Published var willCapturePhoto = false
+    @Published var scannedDocs: [ScannedDoc] = .init()
     
     var alertError: AlertError!
     var session: AVCaptureSession
+    
+    public let publisher = PassthroughSubject<Bool, Never>()
+    private var showOneLevelIn: Bool = false {
+        willSet {
+            publisher.send(showOneLevelIn)
+        }
+    }
     
     private var subscriptions = Set<AnyCancellable>()
     
@@ -21,6 +29,12 @@ final class CameraViewModel: ObservableObject {
         service.$photo.sink { [weak self] photo in
             guard let pic = photo else { return }
             self?.photo = pic
+            guard let img = pic.image?.cgImage else { return }
+            self?.scannedDocs.append(ScannedDoc(image: img, date: Date()))
+            self?.showOneLevelIn = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+                self?.showOneLevelIn = true
+            }
         }
         .store(in: &self.subscriptions)
         

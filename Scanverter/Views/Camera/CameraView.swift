@@ -4,12 +4,12 @@ import AVFoundation
 
 struct CameraView_Previews: PreviewProvider {
     static var previews: some View {
-        CameraView()
+        CameraView(model: CameraViewModel())
     }
 }
 
 struct CameraView: View {
-    @StateObject var model = CameraViewModel()
+    @StateObject var model: CameraViewModel
     @State var currentZoomFactor: CGFloat = 1.0
     
     var captureButton: some View {

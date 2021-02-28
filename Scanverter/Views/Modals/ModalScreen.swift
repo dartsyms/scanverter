@@ -9,7 +9,8 @@ struct ModalScreen: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text("Modal Screen")
+                    Text("Modal Screen").font(.system(size: 20)).bold()
+//                    EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: mockedDocs))
                     Spacer()
                 }
                 Spacer()
@@ -21,15 +22,25 @@ struct ModalScreen: View {
                 }, label: {
                     Image(systemName: "xmark.circle")
                         .resizable()
-                        .frame(width: 35, height: 35, alignment: .leading)
+                        .frame(width: 25, height: 25, alignment: .leading)
                         .foregroundColor(.gray)
                     
                 })
-            }.offset(x: -20, y: -350)
+            }.offset(x: -30, y: -380)
         }
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color(.red).opacity(0.2))
         .edgesIgnoringSafeArea(.all)
+    }
+    
+    private var mockedDocs: [ScannedDoc] {
+        var docs: [ScannedDoc] = .init()
+        let names = ["imageWithText", "slideWithText"]
+        for _ in 0..<2 {
+            names.forEach {
+                docs.append(ScannedDoc(image: UIImage(named: $0)!.cgImage!, date: Date()))
+            }
+        }
+        return docs
     }
 }
 

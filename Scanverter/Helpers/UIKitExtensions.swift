@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import AVFoundation
+import CoreGraphics
 
 extension Date {
     var toString: String {
@@ -142,5 +143,20 @@ extension UIColor {
     }
     static func dividerLineColor() -> UIColor {
         return rgb(red: 204, green: 204, blue: 204)
+    }
+}
+
+//extension CGSize: Hashable {
+//    public func hash(into hasher: inout Hasher) {
+//        hasher.combine(width)
+//        hasher.combine(height)
+//    }
+//}
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
     }
 }
