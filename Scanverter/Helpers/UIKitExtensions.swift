@@ -146,17 +146,22 @@ extension UIColor {
     }
 }
 
-//extension CGSize: Hashable {
-//    public func hash(into hasher: inout Hasher) {
-//        hasher.combine(width)
-//        hasher.combine(height)
-//    }
-//}
-
 extension Array {
     func chunked(into size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
+    }
+}
+
+extension Array where Element: Equatable {
+    mutating func removeDuplicates() {
+        var result = [Element]()
+        for value in self {
+            if !result.contains(value) {
+                result.append(value)
+            }
+        }
+        self = result
     }
 }

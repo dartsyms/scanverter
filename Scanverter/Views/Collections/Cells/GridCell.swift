@@ -16,21 +16,24 @@ struct GridCell: View {
             Image(systemName: "folder.fill")
                 .resizable()
                 .scaledToFit()
-                .foregroundColor(.blue)
-                .frame(maxWidth: 100, maxHeight: 80)
+                .foregroundColor(Color(UIColor.systemBlue))
+                .frame(maxWidth: 80, maxHeight: 60)
             Text(dataSource.folder.name)
+                .font(.headline)
                 .fontWeight(.semibold)
+                .foregroundColor(Color(UIColor.label))
                 .padding([.leading, .trailing], 5)
-            VStack {
+            VStack(alignment: .center) {
                 Text(dataSource.folder.date.toString)
+                    .font(.caption)
                     .fontWeight(.regular)
-                    .foregroundColor(.gray)
-                .padding([.leading, .bottom], 5)
+                    .foregroundColor(Color(UIColor.systemGray))
                 Text("(\(numberOfItems) items)")
+                    .font(.caption)
                     .fontWeight(.regular)
-                    .foregroundColor(.gray)
-                .padding([.trailing, .bottom], 5)
-            }s
+                    .foregroundColor(Color(UIColor.systemGray))
+                .padding([.bottom], 5)
+            }
         }
     }
 }

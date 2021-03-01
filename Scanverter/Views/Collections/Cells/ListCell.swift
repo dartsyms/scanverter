@@ -15,23 +15,26 @@ struct ListCell: View {
         HStack(alignment: .center) {
             Image(systemName: "folder.fill")
                 .resizable()
-                .foregroundColor(.blue)
-                .frame(maxWidth: 100, maxHeight: 80)
+                .foregroundColor(Color(UIColor.systemBlue))
+                .frame(maxWidth: 80, maxHeight: 60)
             
             VStack(alignment: .leading, spacing: 15) {
                 Text(dataSource.folder.name)
-                    .font(.title)
+                    .font(.headline)
                     .fontWeight(.semibold)
+                    .foregroundColor(Color(UIColor.label))
                     .padding([.top, .leading, .trailing, .bottom], 5)
                     .offset(x: 0, y: /*@START_MENU_TOKEN@*/10.0/*@END_MENU_TOKEN@*/)
                 HStack {
                     Text(dataSource.folder.date.toString)
+                        .font(.caption)
                         .fontWeight(.regular)
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(UIColor.systemGray))
                     .padding([.leading, .bottom], 5)
                     Text("(\(numberOfItems) items)")
+                        .font(.caption)
                         .fontWeight(.regular)
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(UIColor.systemGray))
                     .padding([.trailing, .bottom], 5)
                 }
             }

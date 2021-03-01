@@ -1,5 +1,6 @@
 import SwiftUI
 import ExyteGrid
+import Combine
 
 struct FoldersScreen: View {
     @StateObject private var dataSource: FoldersDataSource = .init()
@@ -7,6 +8,10 @@ struct FoldersScreen: View {
     @State private var showCreateFolderDialogue: Bool = false
     @State private var newFolderName: String = ""
     @State private var isSecureLocked: Bool = false
+    
+    @State private var showDeleteAlert: Bool = false
+    @State private var offsets: IndexSet?
+    @State private var showDeleteIcon: Bool = false
     
     var body: some View {
         NavigationStackView {
@@ -30,15 +35,23 @@ struct FoldersScreen: View {
                         ZStack {
                             Color.black.opacity(0.4)
                                 .edgesIgnoringSafeArea(.all)
-                            CreateFolderView(showCreateDirectoryModal: $showCreateFolderDialogue, folderName: $newFolderName, isSecured: $isSecureLocked)
-                                .onDisappear {
+                            CreateFolderView(showCreateDirectoryModal: $showCreateFolderDialogue, folderName: $newFolderName, isSecured: $isSecureLocked) {
                                     dataSource.createNewFolder(withName: newFolderName, secureLock: isSecureLocked)
-                                }
-                                .frame(width: geometry.size.width - geometry.size.width/4, height: geometry.size.height - geometry.size.height/2)
-                                .background(Color(UIColor.systemBackground))
-                                .cornerRadius(20).shadow(radius: 20)
-                        }.navigationBarHidden(true)
+                            }
+                            .frame(width: geometry.size.width - geometry.size.width/4, height: geometry.size.height - geometry.size.height/2)
+                            .background(Color(UIColor.systemBackground))
+                            .cornerRadius(20).shadow(radius: 20)
+                        }
+                        .navigationBarHidden(true)
                     }
+                }
+                .alert(isPresented: self.$showDeleteAlert) {
+                    Alert(title: Text("Deletion Alert!"),
+                          message: Text("You're about to delete the folder."),
+                          primaryButton: .destructive(Text("Delete")) {
+                            dataSource.remove(indexSet: offsets)
+                          },
+                          secondaryButton: .cancel())
                 }
             }
         }
@@ -94,10 +107,15 @@ struct FoldersScreen: View {
                     }
                 }
                 .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 2))
-            }
+            }.onDelete(perform: delete)
         }
         .padding(.top, 90)
         .listStyle(PlainListStyle())
+    }
+    
+    func delete(at offsets: IndexSet) {
+        self.showDeleteAlert = true
+        self.offsets = offsets
     }
 }
 

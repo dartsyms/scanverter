@@ -10,14 +10,16 @@ public class DataManager {
     static func save<T: Encodable>(_ object: T, withName fileName: String) -> AnyPublisher<Bool, Never> {
         return Future<Bool, Never> { promise in
             guard let docsUrl = getDocumentsDirectory() else { return promise(.success(false)) }
-            let url = docsUrl.appendingPathComponent(fileName, isDirectory: false)
+            let url = docsUrl.appendingPathComponent(fileName, isDirectory: true)
             let encoder = JSONEncoder()
             do {
                 let data = try encoder.encode(object)
                 if FileManager.default.fileExists(atPath: url.path) {
                     try FileManager.default.removeItem(at: url)
                 }
-                FileManager.default.createFile(atPath: url.path, contents: data, attributes: nil)
+                try FileManager.default.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil)
+                let metadataFile = "\(fileName).json"
+                try data.write(to: url.appendingPathComponent(metadataFile))
             } catch let error {
                 print("Saving file error \(error.localizedDescription)")
                 promise(.success(false))
@@ -28,7 +30,8 @@ public class DataManager {
     
     static func load<T: Decodable>(_ fileName: String, with type: T.Type) -> T? {
         guard let docsUrl = getDocumentsDirectory() else { return nil }
-        let url = docsUrl.appendingPathComponent(fileName, isDirectory: false)
+        let metadataFile = "\(fileName).json"
+        let url = docsUrl.appendingPathComponent(fileName, isDirectory: true).appendingPathComponent(metadataFile, isDirectory: false)
         if !FileManager.default.fileExists(atPath: url.path) {
             return nil
         }
@@ -69,11 +72,23 @@ public class DataManager {
     }
     
     @discardableResult
-    static func delete(file fileName: String) -> AnyPublisher<Bool, Never> {
+    static func delete(file fileName: String, isDirectory: Bool = false) -> AnyPublisher<Bool, Never> {
         return Future<Bool, Never> { promise in
             guard let docsUrl = getDocumentsDirectory() else { return promise(.success(false)) }
-            let url = docsUrl.appendingPathComponent(fileName, isDirectory: false)
-            if !FileManager.default.fileExists(atPath: url.path) {
+            let url = docsUrl.appendingPathComponent(fileName, isDirectory: isDirectory)
+            if isDirectory {
+                do {
+                    let fileURLs = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
+                    for fileURL in fileURLs {
+                        if FileManager.default.fileExists(atPath: fileURL.path) {
+                            try FileManager.default.removeItem(at: fileURL)
+                        }
+                    }
+                } catch {
+                    promise(.success(false))
+                }
+            }
+            if FileManager.default.fileExists(atPath: url.path) {
                 do {
                     try FileManager.default.removeItem(at: url)
                 } catch {

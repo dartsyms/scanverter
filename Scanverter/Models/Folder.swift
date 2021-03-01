@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 struct Folder: Codable {
     var name: String
@@ -6,11 +7,11 @@ struct Folder: Codable {
     var isPasswordProtected: Bool
     var uid: UUID
     
-    func save() {
+    func save() -> AnyPublisher<Bool, Never> {
         DataManager.save(self, withName: uid.uuidString)
     }
     
-    func delete() {
-        DataManager.delete(file: uid.uuidString)
+    func delete(isDirectory: Bool = false) -> AnyPublisher<Bool, Never> {
+        return DataManager.delete(file: uid.uuidString, isDirectory: isDirectory)
     }
 }

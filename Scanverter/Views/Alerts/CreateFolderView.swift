@@ -7,6 +7,15 @@ struct CreateFolderView: View {
     
     @State var isEditing: Bool = false
     
+    private var onDismiss: (() -> Void)? = nil
+    
+    init(showCreateDirectoryModal: Binding<Bool>, folderName: Binding<String>, isSecured: Binding<Bool>, onDismiss: @escaping () -> Void) {
+        self._showCreateDirectoryModal = showCreateDirectoryModal
+        self._folderName = folderName
+        self._isSecured = isSecured
+        self.onDismiss = onDismiss
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 10) {
@@ -24,7 +33,7 @@ struct CreateFolderView: View {
                     }, label: {
                         Image(systemName: "xmark.circle")
                             .resizable()
-                            .foregroundColor(Color(UIColor.lightText))
+                            .foregroundColor(Color(UIColor.systemGray))
                             .frame(width: 40, height: 40, alignment: .leading)
                         
                     })
@@ -62,6 +71,7 @@ struct CreateFolderView: View {
                 Button(action: {
                     withAnimation(.easeOut(duration: 0.25)) {
                         self.showCreateDirectoryModal = false
+                        onDismiss?()
                     }
                 }) {
                     Text("Create Folder")
@@ -80,6 +90,10 @@ struct CreateFolderView: View {
 
 struct CreateFolderView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateFolderView(showCreateDirectoryModal: .constant(true), folderName: .constant(""), isSecured: .constant(false))
+        CreateFolderView(showCreateDirectoryModal: .constant(true), folderName: .constant(""), isSecured: .constant(false), onDismiss: {})
+            .preferredColorScheme(.light)
+        
+        CreateFolderView(showCreateDirectoryModal: .constant(true), folderName: .constant(""), isSecured: .constant(false), onDismiss: {})
+            .preferredColorScheme(.dark)
     }
 }
