@@ -15,12 +15,13 @@ struct GridCell: View {
         VStack(alignment: .center) {
             Image(systemName: "folder.fill")
                 .resizable()
+                .scaledToFit()
                 .foregroundColor(.blue)
-                .frame(maxWidth: 120, maxHeight: 100)
+                .frame(maxWidth: 100, maxHeight: 80)
             Text(dataSource.folder.name)
                 .fontWeight(.semibold)
                 .padding([.leading, .trailing], 5)
-            HStack {
+            VStack {
                 Text(dataSource.folder.date.toString)
                     .fontWeight(.regular)
                     .foregroundColor(.gray)
@@ -29,8 +30,7 @@ struct GridCell: View {
                     .fontWeight(.regular)
                     .foregroundColor(.gray)
                 .padding([.trailing, .bottom], 5)
-            }
-            
+            }s
         }
     }
 }

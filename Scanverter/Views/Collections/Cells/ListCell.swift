@@ -16,7 +16,7 @@ struct ListCell: View {
             Image(systemName: "folder.fill")
                 .resizable()
                 .foregroundColor(.blue)
-                .frame(maxWidth: 120, maxHeight: 100)
+                .frame(maxWidth: 100, maxHeight: 80)
             
             VStack(alignment: .leading, spacing: 15) {
                 Text(dataSource.folder.name)
@@ -34,9 +34,7 @@ struct ListCell: View {
                         .foregroundColor(.gray)
                     .padding([.trailing, .bottom], 5)
                 }
-                
             }
-            
         }
     }
 }

@@ -13,4 +13,15 @@ public struct Constants {
         EditTool.init(.delete, image: UIImage(named: "deletePageButton")!),
         EditTool.init(.ocr, image: UIImage(named: "ocrButton")!)
     ]
+    
+    static var mockedDocs: [ScannedDoc] {
+        var docs: [ScannedDoc] = .init()
+        let names = ["imageWithText", "slideWithText"]
+        for _ in 0..<2 {
+            names.forEach {
+                docs.append(ScannedDoc(image: UIImage(named: $0)!.cgImage!, date: Date()))
+            }
+        }
+        return docs
+    }
 }

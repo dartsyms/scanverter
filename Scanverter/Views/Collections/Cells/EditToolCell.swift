@@ -8,12 +8,14 @@ struct EditToolCell_Previews: PreviewProvider {
             EditTool.init(.delete, image: UIImage(named: "deletePageButton")!),
             EditTool.init(.ocr, image: UIImage(named: "ocrButton")!)
         ]
-        EditToolCell(dataSource: EditToolCellDataSource(tool: EditTool(tools.last!.type, image: tools.last!.image)))
+        EditToolCell(dataSource: EditToolCellDataSource(tool: EditTool(tools.last!.type, image: tools.last!.image)),
+                     photoDataSource: PhotoCollectionDataSource(scannedDocs: Constants.mockedDocs))
     }
 }
 
 struct EditToolCell: View {
     @StateObject var dataSource: EditToolCellDataSource
+    @StateObject var photoDataSource: PhotoCollectionDataSource
     
     var body: some View {
         VStack(alignment: .center) {
@@ -26,6 +28,18 @@ struct EditToolCell: View {
                 .fontWeight(.semibold)
                 .foregroundColor(Color(UIColor.themeIndigoDark()))
                 .offset(x: 0, y: -10)
+        }.onTapGesture {
+            switch dataSource.editTool.type {
+            case .add:
+                print("Add doc")
+                photoDataSource.addPage()
+            case .crop:
+                photoDataSource.makeCrop()
+            case .delete:
+                print("delete doc")
+            case .ocr:
+                photoDataSource.makeTextRecognition()
+            }
         }
     }
 }

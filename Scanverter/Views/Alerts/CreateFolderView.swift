@@ -3,9 +3,9 @@ import SwiftUI
 struct CreateFolderView: View {
     @Binding var showCreateDirectoryModal: Bool
     @Binding var folderName: String
+    @Binding var isSecured: Bool
     
     @State var isEditing: Bool = false
-    @State var isSecured: Bool = true
     
     var body: some View {
         GeometryReader { geometry in
@@ -24,7 +24,7 @@ struct CreateFolderView: View {
                     }, label: {
                         Image(systemName: "xmark.circle")
                             .resizable()
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color(UIColor.lightText))
                             .frame(width: 40, height: 40, alignment: .leading)
                         
                     })
@@ -32,7 +32,7 @@ struct CreateFolderView: View {
                 HStack {
                     Text("Folder Name")
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color(UIColor.label))
                         .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
                         .offset(x: 20, y: 0)
                     Spacer()
@@ -50,11 +50,12 @@ struct CreateFolderView: View {
                 HStack {
                     Text("Secure Lock")
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Color(UIColor.label))
                         .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
                         .offset(x: 20, y: 0)
                     Spacer()
                     Toggle("", isOn: $isSecured)
+                        .toggleStyle(SwitchToggleStyle(tint: Color(UIColor.systemBlue)))
                         .offset(x: -20, y: 0)
                 }
                 
@@ -68,18 +69,17 @@ struct CreateFolderView: View {
                 .frame(width: geometry.size.width - geometry.size.width/3, height: 20)
                 .padding()
                 .foregroundColor(.white)
-                .background(LinearGradient(gradient: Gradient(colors: [Color.purple, Color.blue]), startPoint: .leading, endPoint: .trailing))
+                .background(LinearGradient(gradient: Gradient(colors: [Color(UIColor.systemBlue), Color(UIColor.systemBlue)]), startPoint: .leading, endPoint: .trailing))
                 .cornerRadius(6)
                 .padding(EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10))
             }
             .padding()
-//            .background(Color.gray)
         }
     }
 }
 
 struct CreateFolderView_Previews: PreviewProvider {
     static var previews: some View {
-        CreateFolderView(showCreateDirectoryModal: .constant(true), folderName: .constant(""))
+        CreateFolderView(showCreateDirectoryModal: .constant(true), folderName: .constant(""), isSecured: .constant(false))
     }
 }

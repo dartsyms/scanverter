@@ -2,8 +2,13 @@ import SwiftUI
 
 struct ModalCamera: View {
     @Environment(\.presentationMode) var presentationMode
-    @StateObject private var model: CameraViewModel = .init()
+    @ObservedObject var model: CameraViewModel
     @State private var showOneLevelIn: Bool = false
+    @State private var fromEditor: Bool = false
+    
+    init(model: CameraViewModel) {
+        self.model = model
+    }
     
     var body: some View {
         NavigationStackView {
@@ -21,11 +26,16 @@ struct ModalCamera: View {
                         
                     })
                 }.offset(x: -20, y: -350)
-                PushView(destination: EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: model.scannedDocs)), isActive: $showOneLevelIn) {
+                PushView(destination: EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: model.scannedDocs), backToCamera: $fromEditor), isActive: $showOneLevelIn) {
                     EmptyView()
                 }.hidden()
             }.onReceive(model.publisher) { status in
                 showOneLevelIn = status
+            }
+            .onAppear {
+                if fromEditor {
+                    presentationMode.wrappedValue.dismiss()
+                }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
             .edgesIgnoringSafeArea(.all)
@@ -35,6 +45,6 @@ struct ModalCamera: View {
 
 struct ModalCamera_Previews: PreviewProvider {
     static var previews: some View {
-        ModalCamera()
+        ModalCamera(model: CameraViewModel())
     }
 }

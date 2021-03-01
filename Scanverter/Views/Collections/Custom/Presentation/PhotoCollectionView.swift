@@ -71,7 +71,7 @@ struct PhotoCollectionView: View {
                 section.orthogonalScrollingBehavior = .none
                 return section
             } cell: { indexPath, item in
-                EditToolCell(dataSource: EditToolCellDataSource(tool: item))
+                EditToolCell(dataSource: EditToolCellDataSource(tool: item), photoDataSource: dataSource)
             } supplementaryView: { kind, indexPath in
                 Text("Section \(indexPath.section)")
             }
@@ -81,9 +81,3 @@ struct PhotoCollectionView: View {
         }
     }
 }
-
-//struct PhotoCollectionView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        PhotoCollectionView()
-//    }
-//}

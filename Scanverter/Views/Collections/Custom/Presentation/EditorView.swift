@@ -2,9 +2,13 @@ import SwiftUI
 import ExyteGrid
 
 struct EditorView: View {
+    @EnvironmentObject var navStack: NavigationStack
     @StateObject var dataSource: PhotoCollectionDataSource
     
     @State private var flow: GridFlow = .rows
+    @State var hudVisible = false
+    @State var hudConfig = CustomProgressConfig()
+    @Binding var backToCamera: Bool
     
     var body: some View {
         ZStack {
@@ -14,14 +18,37 @@ struct EditorView: View {
                 } else {
                     photoList
                 }
-                EditorTabBar(dataSource: EditTabBarDataSource(tools: Constants.editTools))
+                EditorTabBar(dataSource: EditTabBarDataSource(tools: Constants.editTools), photoDataSource: dataSource)
             }
-            swithFlowButton
+            goBackButton
+            switchFlowButton
+            CustomProgressView($hudVisible, config: hudConfig)
+        }
+        .onReceive(dataSource.progressPublisher) { data in
+            switch data.showProgressType {
+            case .error:
+                hudConfig.title = "Error!"
+                hudConfig.errorImage = "xmark.circle"
+            case .info:
+                hudConfig.title = "Info"
+                hudConfig.warningImage = "info.circle"
+            case .success:
+                hudConfig.title = "Success"
+                hudConfig.successImage = "checkmark.circle"
+            }
+            hudConfig.caption = data.progressViewMessage
+            hudVisible = data.showProgressView
+        }
+        .onReceive(dataSource.dismissPublisher) { shoudBeDismissed in
+            if shoudBeDismissed {
+                print("Should be poped to camera")
+                
+            }
         }
         .edgesIgnoringSafeArea(.all)
     }
     
-    private var swithFlowButton: some View {
+    private var switchFlowButton: some View {
         HStack {
             Spacer()
             Button(action: {
@@ -32,11 +59,27 @@ struct EditorView: View {
             }, label: {
                 Image(systemName: flow == .rows ? "square.grid.3x3" : "list.bullet")
                     .resizable()
-                    .frame(width: 25, height: 25, alignment: .leading)
-                    .foregroundColor(.gray)
+                    .frame(width: 30, height: 30, alignment: .leading)
+                    .foregroundColor(.secondary)
                 
             })
-        }.offset(x: -350, y: -380)
+        }.offset(x: -20, y: -380)
+    }
+    
+    private var goBackButton: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                backToCamera = true
+                navStack.pop()
+            }, label: {
+                HStack {
+                    Text("Back to camera")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                }
+            })
+        }.offset(x: -275, y: -380)
     }
     
     private var photoGrid: some View {
@@ -90,6 +133,6 @@ struct EditorView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: mockedDocs))
+        EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: mockedDocs), backToCamera: .constant(false))
     }
 }
