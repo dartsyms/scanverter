@@ -1,28 +1,31 @@
 import SwiftUI
-import ExyteGrid
 
 struct EditorView: View {
     @EnvironmentObject var navStack: NavigationStack
     @StateObject var dataSource: PhotoCollectionDataSource
     
-    @State private var flow: GridFlow = .rows
     @State var hudVisible = false
     @State var hudConfig = CustomProgressConfig()
     @Binding var backToCamera: Bool
     
+    @State var goToOCRResults: Bool = false
+    @State var recognizedText: String = ""
+    
     var body: some View {
         ZStack {
             VStack {
-                if flow == .rows {
-                    photoGrid
-                } else {
-                    photoList
-                }
+                photoPager
                 EditorTabBar(dataSource: EditTabBarDataSource(tools: Constants.editTools), photoDataSource: dataSource)
             }
             goBackButton
-            switchFlowButton
+            showPhotoLibrary
+                .fullScreenCover(isPresented: $dataSource.isPresentingImagePicker, content: {
+                    ImagePicker(sourceType: dataSource.sourceType, completionHandler: dataSource.didSelectImage)
+                })
             CustomProgressView($hudVisible, config: hudConfig)
+            PushView(destination: OCRResultsView(message: $recognizedText), isActive: $goToOCRResults) {
+                EmptyView()
+            }.hidden()
         }
         .onReceive(dataSource.progressPublisher) { data in
             switch data.showProgressType {
@@ -42,26 +45,28 @@ struct EditorView: View {
         .onReceive(dataSource.dismissPublisher) { shoudBeDismissed in
             if shoudBeDismissed {
                 print("Should be poped to camera")
-                
             }
         }
+        .onReceive(dataSource.ocrResultPublisher) { result in
+            recognizedText = result.recognizedText
+            goToOCRResults = result.goToOCRResults
+        }
+        .onReceive(dataSource.selectionPublisher, perform: { _ in
+            dataSource.currentPage += 1
+        })
         .edgesIgnoringSafeArea(.all)
     }
     
-    private var switchFlowButton: some View {
+    private var showPhotoLibrary: some View {
         HStack {
             Spacer()
             Button(action: {
-                withAnimation {
-                    flow = flow == .rows ? .columns : .rows
-                }
-                
+                dataSource.isPresentingImagePicker = true
             }, label: {
-                Image(systemName: flow == .rows ? "square.grid.3x3" : "list.bullet")
+                Image(systemName: "photo.on.rectangle.angled")
                     .resizable()
-                    .frame(width: 30, height: 30, alignment: .leading)
+                    .frame(width: 40, height: 30, alignment: .leading)
                     .foregroundColor(.secondary)
-                
             })
         }.offset(x: -20, y: -380)
     }
@@ -70,6 +75,7 @@ struct EditorView: View {
         HStack {
             Spacer()
             Button(action: {
+                dataSource.recognitionRequest?.cancel()
                 backToCamera = true
                 navStack.pop()
             }, label: {
@@ -82,41 +88,23 @@ struct EditorView: View {
         }.offset(x: -275, y: -380)
     }
     
-    private var photoGrid: some View {
-        VStack {
-            Grid(tracks: 3) {
+    private var photoPager: some View {
+        return VStack {
+            PageView(selection: $dataSource.selection, indexBackgroundDisplayMode: .always) {
                 ForEach(dataSource.scannedDocs, id: \.id) { item in
                         VStack {
                             EditImageCell(dataSource: EditCellDataSource(scannedDoc: item))
-                            Text(item.date.toString)
-                                .foregroundColor(Color.gray)
-                                .font(.caption)
+                            Text(item.date.toString) 
+                                .foregroundColor(Color(UIColor.systemGray))
+                                .font(.headline)
                         }
-                        .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 4))
-    //                    .border(Color.secondary, width: 1)
+                        .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 4))
+                        .border(Color(UIColor.systemPurple).opacity(0.8), width: 1)
                 }
-            }
-            .padding(.top, 120)
-            .gridContentMode(.scroll)
-            .gridFlow(.rows)
+           }
+           .padding(.top, 120)
             Spacer()
         }
-    }
-    
-    private var photoList: some View {
-        List {
-            ForEach(dataSource.scannedDocs, id: \.id) { item in
-                HStack {
-                    EditImageCell(dataSource: EditCellDataSource(scannedDoc: item))
-                    Text(item.date.toString)
-                        .foregroundColor(Color.gray)
-                        .font(.caption)
-                }
-                .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 2))
-            }
-        }
-        .padding(.top, 90)
-        .listStyle(PlainListStyle())
     }
 }
 

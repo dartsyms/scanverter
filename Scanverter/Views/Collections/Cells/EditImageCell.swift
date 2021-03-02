@@ -14,7 +14,8 @@ struct EditImageCell: View {
             Image(uiImage: UIImage(cgImage: dataSource.scannedDoc.image))
                 .resizable()
                 .scaledToFit()
-                .frame(width: 90, height: 90)
+                .padding()
+                .frame(width: UIScreen.main.bounds.width - 20, height: UIScreen.main.bounds.width - 40)
         }
     }
 }

@@ -3,7 +3,7 @@ import PDFKit
 import Combine
 
 protocol DocGenerator {
-    func generatePDF() -> AnyPublisher<Bool, Never>
+    func generatePDF() -> AnyPublisher<PDFDocument, Never>
     func getPDFdata() -> AnyPublisher<Data?, Never>
     var pages: [UIImage] { get set }
 }
@@ -19,8 +19,8 @@ class PDFGenerator: NSObject, DocGenerator {
         self.pages = pages
     }
     
-    func generatePDF() -> AnyPublisher<Bool, Never> {
-        return Future<Bool, Never> { promise in
+    func generatePDF() -> AnyPublisher<PDFDocument, Never> {
+        return Future<PDFDocument, Never> { promise in
             DispatchQueue.global(qos: .background).async {
                 for (index, image) in self.pages.enumerated() {
                     let A4paperSize = CGSize(width: 595, height: 842)
@@ -31,7 +31,7 @@ class PDFGenerator: NSObject, DocGenerator {
                     self.pdfPage?.setBounds(bounds, for: .cropBox)
                     self.pdfDocument.insert(self.pdfPage!, at: index)
                 }
-                promise(.success(true))
+                promise(.success(self.pdfDocument))
             }
         }.eraseToAnyPublisher()
     }

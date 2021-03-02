@@ -2,6 +2,7 @@ import Combine
 import UIKit
 import Photos
 import SwiftyTesseract
+import PDFKit
 
 typealias Docs = [ScannedDoc]
 
@@ -21,17 +22,42 @@ struct ProgressInfo {
     var showProgressView: Bool = false
 }
 
+struct RecognitionResult {
+    var recognizedText: String = ""
+    var goToOCRResults: Bool = false
+}
+
 final class PhotoCollectionDataSource: ObservableObject {
     @Injected private var pdfGenerator: DocGenerator
     
     @Published var scannedDocs: [ScannedDoc] = .init()
+    @Published var selectedDoc: ScannedDoc?
     @Published var selectedImages: [UIImage] = .init()
     @Published var pageTitle: String = ""
     @Published var recognizedText: String = ""
     @Published var updateProgress: CGFloat = 0
     
     @Published var recognitionInProgress: Bool = false
-    @Published var goToOCRResults: Bool = false
+    
+    @Published var selectedLibraryImage: UIImage?
+    @Published var isPresentingImagePicker = false
+    
+    private(set) var sourceType: ImagePicker.SourceType = .photoLibrary
+    
+    func choosePhoto() {
+        sourceType = .photoLibrary
+        isPresentingImagePicker = true
+    }
+
+    func didSelectImage(_ image: UIImage?) {
+        selectedLibraryImage = image
+        if image != nil {
+            scannedDocs.append(ScannedDoc(image: image!.cgImage!, date: Date()))
+            print("Scandocs count \(scannedDocs.count)")
+            selectedImages.append(image!)
+        }
+        isPresentingImagePicker = false
+    }
     
     public let alertPublisher: PassthroughSubject<AlertData, Never> = .init()
     private var alert: AlertData = AlertData() {
@@ -53,14 +79,29 @@ final class PhotoCollectionDataSource: ObservableObject {
             DispatchQueue.main.async {
                 self.progressPublisher.send(self.progress)
             }
-            
         }
     }
     
-    private var currentPage: Int = 1
+    public let ocrResultPublisher = PassthroughSubject<RecognitionResult, Never>()
+    private var goToOCRResults: RecognitionResult = RecognitionResult() {
+        willSet {
+            DispatchQueue.main.async {
+                self.ocrResultPublisher.send(self.goToOCRResults)
+            }
+        }
+    }
+    
+    var currentPage: Int = 1
     private var totalPages: Int = 0 {
         didSet {
             pageTitle = (1..<2).contains(totalPages) ? "Page 1" : "Page \(currentPage)/\(totalPages)"
+        }
+    }
+    
+    public let selectionPublisher = PassthroughSubject<Int, Never>()
+    var selection: Int = 1 {
+        didSet {
+            selectionPublisher.send(1)
         }
     }
     
@@ -72,12 +113,12 @@ final class PhotoCollectionDataSource: ObservableObject {
     }
     
     private var subscriptions: Set<AnyCancellable> = .init()
+    var recognitionRequest: AnyCancellable?
     
     var tools: [EditTool] = .init()
     
     var documentOrigin: DocumentOrigin?
     var pdfData: Data?
-    var progressViewMessage: String = ""
     
     init(scannedDocs: Docs) {
         setup(withSources: scannedDocs)
@@ -87,6 +128,9 @@ final class PhotoCollectionDataSource: ObservableObject {
         docs.forEach { scannedDocs.append($0) }
         Constants.editTools.forEach { tools.append($0) }
         totalPages = scannedDocs.count
+        scannedDocs
+            .compactMap({ UIImage(cgImage: $0.image) })
+            .forEach { item in selectedImages.append(item) }
     }
     
     func cleanup() {
@@ -98,7 +142,7 @@ final class PhotoCollectionDataSource: ObservableObject {
         scannedDocs.removeAll()
     }
     
-    func saveAsPDF() -> AnyPublisher<Bool, Never> {
+    func saveAsPDF() -> AnyPublisher<PDFDocument, Never> {
         selectedImages.forEach { pdfGenerator.pages.append($0) }
         return pdfGenerator.generatePDF()
     }
@@ -131,6 +175,11 @@ final class PhotoCollectionDataSource: ObservableObject {
         }
     }
     
+    func pageSelectionDidChange(from oldValue: Int, to newValue: Int) {
+        print("current page moved from \(oldValue) to \(newValue)")
+        currentPage = newValue
+    }
+    
     func addPage() {
         guard documentOrigin != nil else { return }
         switch documentOrigin! {
@@ -160,6 +209,7 @@ final class PhotoCollectionDataSource: ObservableObject {
     func makeTextRecognition() {
         print("make text recognition starts..")
         recognitionInProgress = true
+        recognizedText.removeAll()
         progress = ProgressInfo(progressViewMessage: "Please wait... Recognition in progress...",
                                 showProgressType: .info,
                                 showProgressView: true)
@@ -168,7 +218,8 @@ final class PhotoCollectionDataSource: ObservableObject {
         let index = currentPage - 1
         tesseract.configure {}
         let image = UIImage(cgImage: scannedDocs[index].image)
-        tesseract.performOCRPublisher(on: image)
+        print("Prepare image with index \(index)")
+        recognitionRequest = tesseract.performOCRPublisher(on: image)
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: DispatchQueue.main)
             .sink { completion in
@@ -181,9 +232,9 @@ final class PhotoCollectionDataSource: ObservableObject {
                                         showProgressView: false)
                 print(result)
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-                    self.goToOCRResults = true
+                    self.goToOCRResults = RecognitionResult(recognizedText: self.recognizedText,
+                                                            goToOCRResults: true)
                 }
             }
-            .store(in: &subscriptions)
     }
 }
