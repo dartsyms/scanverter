@@ -38,10 +38,11 @@ enum ProgressViewStyle {
     case none
 }
 
-enum EditType: String, CaseIterable {
+enum EditType {
     case add
     case crop
     case delete
+    case save(SaveType)
     case ocr
     
     var tool: String {
@@ -52,6 +53,8 @@ enum EditType: String, CaseIterable {
             return "Crop"
         case .delete:
             return "Delete"
+        case .save:
+            return "Save"
         case .ocr:
             return "OCR"
         }

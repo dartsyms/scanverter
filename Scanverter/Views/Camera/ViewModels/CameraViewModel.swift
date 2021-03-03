@@ -10,6 +10,7 @@ final class CameraViewModel: ObservableObject {
     @Published var isFlashOn = false
     @Published var willCapturePhoto = false
     @Published var scannedDocs: [ScannedDoc] = .init()
+    @Published var isPresentingImagePicker: Bool = false
     
     var alertError: AlertError!
     var session: AVCaptureSession
@@ -32,7 +33,7 @@ final class CameraViewModel: ObservableObject {
             guard let img = pic.image?.cgImage else { return }
             self?.scannedDocs.append(ScannedDoc(image: img, date: Date()))
             self?.showOneLevelIn = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 self?.showOneLevelIn = true
             }
         }
@@ -49,7 +50,7 @@ final class CameraViewModel: ObservableObject {
         }
         .store(in: &self.subscriptions)
         
-        service.$willCapturePhoto.sink { [weak self] (val) in
+        service.$willCapturePhoto.sink { [weak self] val in
             self?.willCapturePhoto = val
         }
         .store(in: &self.subscriptions)
@@ -74,5 +75,13 @@ final class CameraViewModel: ObservableObject {
     
     func switchFlash() {
         service.flashMode = service.flashMode == .on ? .off : .on
+    }
+    
+    func didSelectImage(_ image: UIImage?) {
+        isPresentingImagePicker = false
+        guard image != nil, let picData = image!.pngData() else { return }
+        self.photo = Photo(originalData: picData)
+        scannedDocs.append(ScannedDoc(image: image!.cgImage!, date: Date()))
+        showOneLevelIn = true
     }
 }

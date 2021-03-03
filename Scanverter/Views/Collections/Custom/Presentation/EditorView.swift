@@ -18,10 +18,11 @@ struct EditorView: View {
                 EditorTabBar(dataSource: EditTabBarDataSource(tools: Constants.editTools), photoDataSource: dataSource)
             }
             goBackButton
-            showPhotoLibrary
                 .fullScreenCover(isPresented: $dataSource.isPresentingImagePicker, content: {
                     ImagePicker(sourceType: dataSource.sourceType, completionHandler: dataSource.didSelectImage)
                 })
+            showPhotoLibrary
+                .sheet(isPresented: $dataSource.isPresentingFolderChooser) { FoldersScreen() }
             CustomProgressView($hudVisible, config: hudConfig)
             PushView(destination: OCRResultsView(message: $recognizedText), isActive: $goToOCRResults) {
                 EmptyView()
@@ -42,9 +43,11 @@ struct EditorView: View {
             hudConfig.caption = data.progressViewMessage
             hudVisible = data.showProgressView
         }
-        .onReceive(dataSource.dismissPublisher) { shoudBeDismissed in
-            if shoudBeDismissed {
-                print("Should be poped to camera")
+        .onReceive(dataSource.dismissPublisher) { _ in
+            print("Should be poped to camera")
+            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+                backToCamera = true
+                navStack.pop()
             }
         }
         .onReceive(dataSource.ocrResultPublisher) { result in

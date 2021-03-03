@@ -8,9 +8,11 @@ public enum ModalOption {
 
 public struct Constants {
     static let editTools = [
-        EditTool.init(.add, image: UIImage(named: "addPageButton")!),
+//        EditTool.init(.add, image: UIImage(named: "addPageButton")!),
         EditTool.init(.crop, image: UIImage(named: "cropButton")!),
         EditTool.init(.delete, image: UIImage(named: "deletePageButton")!),
+        EditTool.init(.save(.image), image: UIImage(named: "imageSave")!),
+        EditTool.init(.save(.pdf), image: UIImage(named: "pdfSave")!),
         EditTool.init(.ocr, image: UIImage(named: "ocrButton")!)
     ]
     

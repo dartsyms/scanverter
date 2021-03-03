@@ -10,6 +10,10 @@ enum ProgressViewType {
     case error, success, info
 }
 
+enum SaveType {
+    case image, pdf
+}
+
 struct AlertData {
     var title: String = ""
     var message: String = ""
@@ -41,6 +45,7 @@ final class PhotoCollectionDataSource: ObservableObject {
     
     @Published var selectedLibraryImage: UIImage?
     @Published var isPresentingImagePicker = false
+    @Published var isPresentingFolderChooser = false
     
     private(set) var sourceType: ImagePicker.SourceType = .photoLibrary
     
@@ -142,6 +147,30 @@ final class PhotoCollectionDataSource: ObservableObject {
         scannedDocs.removeAll()
     }
     
+    func save(as type: SaveType) {
+        switch type {
+        case .image:
+            saveAsImages()
+                .receive(on: DispatchQueue.main)
+                .sink { done in
+                    if done {
+                        self.popToRoot = true
+                    }
+                }
+                .store(in: &subscriptions)
+        case .pdf:
+            saveAsPDF()
+                .receive(on: DispatchQueue.main)
+                .sink { pdfDoc in
+                    // TODO: save pdf doc in folder
+                    print("pdf ready with pages count: \(pdfDoc.pageCount)")
+                    self.isPresentingFolderChooser = true
+//                    self.popToRoot = true
+                }
+                .store(in: &subscriptions)
+        }
+    }
+    
     func saveAsPDF() -> AnyPublisher<PDFDocument, Never> {
         selectedImages.forEach { pdfGenerator.pages.append($0) }
         return pdfGenerator.generatePDF()
@@ -158,19 +187,24 @@ final class PhotoCollectionDataSource: ObservableObject {
     }
     
     private func saveToPhotoLibrary(_ image: UIImage) {
+        self.progress = ProgressInfo(progressViewMessage: "Saving...",
+                                     showProgressType: .info,
+                                     showProgressView: true)
         PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.creationRequestForAsset(from: image)
         } completionHandler: { success, error in
             if !success {
-                DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
                     self.progress = ProgressInfo(progressViewMessage: "Error saving. Try again later.",
                                                  showProgressType: .error,
-                                                 showProgressView: true)
+                                                 showProgressView: false)
                 }
             } else {
-                self.progress = ProgressInfo(progressViewMessage: "Saved.",
-                                             showProgressType: .success,
-                                             showProgressView: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+                    self.progress = ProgressInfo(progressViewMessage: "Saved.",
+                                                 showProgressType: .success,
+                                                 showProgressView: false)
+                }
             }
         }
     }
@@ -200,6 +234,7 @@ final class PhotoCollectionDataSource: ObservableObject {
             }
             popToRoot = true
         }
+        isPresentingImagePicker = false
     }
     
     func makeCrop() {
@@ -215,6 +250,7 @@ final class PhotoCollectionDataSource: ObservableObject {
                                 showProgressView: true)
         
         let tesseract = Tesseract(languages: [.english, .russian], engineMode: .default)
+        print("Current page \(currentPage)")
         let index = currentPage - 1
         tesseract.configure {}
         let image = UIImage(cgImage: scannedDocs[index].image)

@@ -3,9 +3,11 @@ import SwiftUI
 struct EditToolCell_Previews: PreviewProvider {
     static var previews: some View {
         let tools = [
-            EditTool.init(.add, image: UIImage(named: "addPageButton")!),
+//            EditTool.init(.add, image: UIImage(named: "addPageButton")!),
             EditTool.init(.crop, image: UIImage(named: "cropButton")!),
             EditTool.init(.delete, image: UIImage(named: "deletePageButton")!),
+            EditTool.init(.save(.image), image: UIImage(named: "imageSave")!),
+            EditTool.init(.save(.pdf), image: UIImage(named: "pdfSave")!),
             EditTool.init(.ocr, image: UIImage(named: "ocrButton")!)
         ]
         EditToolCell(dataSource: EditToolCellDataSource(tool: EditTool(tools.last!.type, image: tools.last!.image)),
@@ -32,11 +34,13 @@ struct EditToolCell: View {
             switch dataSource.editTool.type {
             case .add:
                 print("Add doc")
-                photoDataSource.addPage()
             case .crop:
                 photoDataSource.makeCrop()
             case .delete:
                 print("delete doc")
+            case .save(let type):
+                print("save")
+                photoDataSource.save(as: type)
             case .ocr:
                 photoDataSource.makeTextRecognition()
             }

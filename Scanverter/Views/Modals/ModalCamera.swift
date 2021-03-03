@@ -10,11 +10,30 @@ struct ModalCamera: View {
         self.model = model
     }
     
+    private var showPhotoLibrary: some View {
+        HStack {
+            Spacer()
+            Button(action: {
+                model.isPresentingImagePicker = true
+            }, label: {
+                Image(systemName: "photo.on.rectangle.angled")
+                    .resizable()
+                    .frame(width: 40, height: 30, alignment: .leading)
+                    .foregroundColor(.gray)
+            })
+        }
+        .offset(x: -280, y: 0)
+        .fullScreenCover(isPresented: $model.isPresentingImagePicker, content: {
+            ImagePicker(sourceType: .photoLibrary, completionHandler: model.didSelectImage)
+        })
+    }
+    
     var body: some View {
         NavigationStackView {
             ZStack {
                 CameraView(model: model)
                 HStack {
+                    showPhotoLibrary
                     Spacer()
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
@@ -23,7 +42,6 @@ struct ModalCamera: View {
                             .resizable()
                             .frame(width: 35, height: 35, alignment: .leading)
                             .foregroundColor(.gray)
-                        
                     })
                 }.offset(x: -20, y: -350)
                 PushView(destination: EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: model.scannedDocs), backToCamera: $fromEditor), isActive: $showOneLevelIn) {
