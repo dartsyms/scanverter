@@ -2,11 +2,18 @@ import Foundation
 import UIKit
 import AVFoundation
 import CoreGraphics
+import PDFKit
 
 extension Date {
     var toString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
+    }
+    
+    var toFileNameString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HHmmss"
         return formatter.string(from: self)
     }
     
@@ -165,3 +172,24 @@ extension Array where Element: Equatable {
         self = result
     }
 }
+
+extension Array where Element: UIImage {
+      func makePDF()-> PDFDocument? {
+        let pdfDocument = PDFDocument()
+        for (index,image) in self.enumerated() {
+            let pdfPage = PDFPage(image: image)
+            pdfDocument.insert(pdfPage!, at: index)
+        }
+        return pdfDocument
+    }
+}
+
+extension UIImage{
+    func resize(toWidth width: CGFloat) -> UIImage? {
+        let canvas = CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))
+        return UIGraphicsImageRenderer(size: canvas, format: imageRendererFormat).image {
+            _ in draw(in: CGRect(origin: .zero, size: canvas))
+        }
+    }
+}
+

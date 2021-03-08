@@ -16,7 +16,10 @@ struct TabBar: View {
     var body: some View {
         HStack(spacing: 30) {
             VStack {
-                TabBarItem(currentView: self.$currentView, imageName: "folder", paddingEdges: .leading, tab: .folders)
+                TabBarItem(currentView: self.$currentView,
+                           imageName: "folder",
+                           paddingEdges: .leading,
+                           tab: .folders)
                 Text("Folders")
                     .foregroundColor(.primary)
                     .font(.caption2)
@@ -24,12 +27,12 @@ struct TabBar: View {
            
             HStack(spacing: 40) {
                 VStack {
-                    ModalScreenShowTabButton(name: "mic.fill", radius: 20) {
+                    ModalScreenShowTabButton(name: "eye", radius: 20) {
                         self.showMicModal.toggle()
                     }
                     .padding(.top, 4)
                     .padding(.bottom, 4)
-                    Text("Record")
+                    Text("Vision")
                         .foregroundColor(.primary)
                         .font(.caption2)
                 }
@@ -39,7 +42,7 @@ struct TabBar: View {
                     }
                     .padding(.top, 4)
                     .padding(.bottom, 4)
-                    Text("Scan")
+                    Text("CamScan")
                         .foregroundColor(.primary)
                         .font(.caption2)
                 }
@@ -56,8 +59,10 @@ struct TabBar: View {
             }
             
             VStack {
-                TabBarItem(currentView: self.$currentView, imageName: "gearshape", paddingEdges: .trailing, tab: .settings)
-                    
+                TabBarItem(currentView: self.$currentView,
+                           imageName: "gearshape",
+                           paddingEdges: .trailing,
+                           tab: .settings)
                 Text("Settings")
                     .foregroundColor(.primary)
                     .font(.caption2)

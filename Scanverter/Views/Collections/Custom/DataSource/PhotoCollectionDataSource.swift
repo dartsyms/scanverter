@@ -31,6 +31,11 @@ struct RecognitionResult {
     var goToOCRResults: Bool = false
 }
 
+struct PDFGenerationResult {
+    var pdfDoc: PDFDocument? = nil
+    var isPresentingFolderChooser = false
+}
+
 final class PhotoCollectionDataSource: ObservableObject {
     @Injected private var pdfGenerator: DocGenerator
     
@@ -45,7 +50,6 @@ final class PhotoCollectionDataSource: ObservableObject {
     
     @Published var selectedLibraryImage: UIImage?
     @Published var isPresentingImagePicker = false
-    @Published var isPresentingFolderChooser = false
     
     private(set) var sourceType: ImagePicker.SourceType = .photoLibrary
     
@@ -92,6 +96,15 @@ final class PhotoCollectionDataSource: ObservableObject {
         willSet {
             DispatchQueue.main.async {
                 self.ocrResultPublisher.send(self.goToOCRResults)
+            }
+        }
+    }
+    
+    public let pdfGenerationPublisher = PassthroughSubject<PDFGenerationResult, Never>()
+    private var pdfGenerationResult: PDFGenerationResult = PDFGenerationResult() {
+        willSet {
+            DispatchQueue.main.async {
+                self.pdfGenerationPublisher.send(self.pdfGenerationResult)
             }
         }
     }
@@ -162,13 +175,15 @@ final class PhotoCollectionDataSource: ObservableObject {
             saveAsPDF()
                 .receive(on: DispatchQueue.main)
                 .sink { pdfDoc in
-                    // TODO: save pdf doc in folder
                     print("pdf ready with pages count: \(pdfDoc.pageCount)")
-                    self.isPresentingFolderChooser = true
-//                    self.popToRoot = true
+                    self.pdfGenerationResult = PDFGenerationResult(pdfDoc: pdfDoc, isPresentingFolderChooser: true)
                 }
                 .store(in: &subscriptions)
         }
+    }
+    
+    func save(pdfDoc: PDFDocument, namedAs named: String, in folder: Folder) -> AnyPublisher<Bool, Never> {
+        DataManager.save(pdf: pdfDoc, withFileName: named, inFolder: folder.uid.uuidString)
     }
     
     func saveAsPDF() -> AnyPublisher<PDFDocument, Never> {

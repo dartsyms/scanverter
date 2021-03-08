@@ -23,10 +23,11 @@ class PDFGenerator: NSObject, DocGenerator {
         return Future<PDFDocument, Never> { promise in
             DispatchQueue.global(qos: .background).async {
                 for (index, image) in self.pages.enumerated() {
+                    print("Scanned pages in generator: \(self.pages)")
                     let A4paperSize = CGSize(width: 595, height: 842)
                     let bounds = CGRect.init(origin: .zero, size: A4paperSize)
                     let coreImage = image.cgImage!
-                    let editedImage = UIImage(cgImage: coreImage, scale: 0.8, orientation: UIImage.Orientation.downMirrored)
+                    let editedImage = UIImage(cgImage: coreImage)
                     self.pdfPage = PDFPage(image: editedImage)
                     self.pdfPage?.setBounds(bounds, for: .cropBox)
                     self.pdfDocument.insert(self.pdfPage!, at: index)

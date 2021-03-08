@@ -1,4 +1,6 @@
 import SwiftUI
+import PDFKit
+import Combine
 
 struct EditorView: View {
     @EnvironmentObject var navStack: NavigationStack
@@ -10,6 +12,12 @@ struct EditorView: View {
     
     @State var goToOCRResults: Bool = false
     @State var recognizedText: String = ""
+    @State var isPresentingFolderChooser: Bool = false
+    
+    @State private var pdfToSave: PDFDocument?
+    @State private var folderToSaveIn: Folder?
+    
+    @State private var saveRequest: AnyCancellable?
     
     var body: some View {
         ZStack {
@@ -22,7 +30,9 @@ struct EditorView: View {
                     ImagePicker(sourceType: dataSource.sourceType, completionHandler: dataSource.didSelectImage)
                 })
             showPhotoLibrary
-                .sheet(isPresented: $dataSource.isPresentingFolderChooser) { FoldersScreen() }
+                .sheet(isPresented: $isPresentingFolderChooser, onDismiss: {
+                    savePDFDocOnDismiss(asFileNamed: "\(folderToSaveIn?.name ?? "folder")-\(Date().toFileNameString)")
+                }) { FoldersScreen(selectedFolder: $folderToSaveIn, calledFromSaving: true) }
             CustomProgressView($hudVisible, config: hudConfig)
             PushView(destination: OCRResultsView(message: $recognizedText), isActive: $goToOCRResults) {
                 EmptyView()
@@ -43,6 +53,10 @@ struct EditorView: View {
             hudConfig.caption = data.progressViewMessage
             hudVisible = data.showProgressView
         }
+        .onReceive(dataSource.pdfGenerationPublisher) { data in
+            pdfToSave = data.pdfDoc
+            isPresentingFolderChooser = data.isPresentingFolderChooser
+        }
         .onReceive(dataSource.dismissPublisher) { _ in
             print("Should be poped to camera")
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
@@ -55,8 +69,12 @@ struct EditorView: View {
             goToOCRResults = result.goToOCRResults
         }
         .onReceive(dataSource.selectionPublisher, perform: { _ in
-            dataSource.currentPage += 1
+            dataSource.currentPage = dataSource.selection
         })
+        .onDisappear {
+            saveRequest?.cancel()
+            saveRequest = nil
+        }
         .edgesIgnoringSafeArea(.all)
     }
     
@@ -107,6 +125,19 @@ struct EditorView: View {
            }
            .padding(.top, 120)
             Spacer()
+        }
+    }
+    
+    private func savePDFDocOnDismiss(asFileNamed named: String) {
+        if let doc = pdfToSave, let folder = folderToSaveIn {
+            saveRequest = dataSource.save(pdfDoc: doc, namedAs: named, in: folder)
+                .receive(on: DispatchQueue.main)
+                .sink { saved in
+                    DispatchQueue.main.async {
+                        self.dataSource.selectedImages.removeAll()
+                    }
+                    print("pdf file saved in folder")
+                }
         }
     }
 }

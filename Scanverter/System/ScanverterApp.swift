@@ -2,7 +2,6 @@ import SwiftUI
 
 @main
 struct ScanverterApp: App {
-    
     init() {
         AppContainer.makeDefault()
     }

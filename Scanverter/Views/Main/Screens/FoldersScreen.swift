@@ -3,6 +3,8 @@ import ExyteGrid
 import Combine
 
 struct FoldersScreen: View {
+    @Environment(\.presentationMode) var presentationMode
+    
     @StateObject private var dataSource: FoldersDataSource = .init()
     @State private var flow: GridFlow = .rows
     @State private var showCreateFolderDialogue: Bool = false
@@ -12,6 +14,11 @@ struct FoldersScreen: View {
     @State private var showDeleteAlert: Bool = false
     @State private var offsets: IndexSet?
     @State private var showDeleteIcon: Bool = false
+    
+    @Binding var selectedFolder: Folder?
+    var calledFromSaving: Bool = false
+    
+    @State private var subscriptions: Set<AnyCancellable> = .init()
     
     var body: some View {
         NavigationStackView {
@@ -24,6 +31,9 @@ struct FoldersScreen: View {
                             foldersList
                         }
                     }
+                    .onReceive(NotificationCenter.default.publisher(for: Notification.Name("TextRecognizerScreenDismissed")), perform: { _ in
+                        dataSource.loadFolders()
+                    })
                     .onAppear {
                         dataSource.loadFolders()
                     }
@@ -37,6 +47,13 @@ struct FoldersScreen: View {
                                 .edgesIgnoringSafeArea(.all)
                             CreateFolderView(showCreateDirectoryModal: $showCreateFolderDialogue, folderName: $newFolderName, isSecured: $isSecureLocked) {
                                     dataSource.createNewFolder(withName: newFolderName, secureLock: isSecureLocked)
+                                        .receive(on: DispatchQueue.main)
+                                        .sink { done in
+                                            if done {
+                                                newFolderName = ""
+                                            }
+                                        }
+                                        .store(in: &subscriptions)
                             }
                             .frame(width: geometry.size.width - geometry.size.width/4, height: geometry.size.height - geometry.size.height/2)
                             .background(Color(UIColor.systemBackground))
@@ -77,6 +94,8 @@ struct FoldersScreen: View {
                 }
             }, label: { Image(systemName: flow == .rows ? "square.grid.3x3" : "list.bullet").foregroundColor(.primary) })
         }
+        .disabled(calledFromSaving ? true : false)
+        .opacity(calledFromSaving ? 0 : 1)
     }
     
     private var foldersGrid: some View {
@@ -84,11 +103,21 @@ struct FoldersScreen: View {
             Grid(tracks: 3) {
                 ForEach(dataSource.folders, id: \.uid) { item in
                         VStack {
-                            PushView(destination: FolderDetailScreen()) {
-                                GridCell(dataSource: FolderCellDataSource(folder: item))
+                            if calledFromSaving {
+                                GridCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                                    .onTapGesture {
+                                        dataSource.setSelected(folder: item)
+                                        selectedFolder = item
+                                        presentationMode.wrappedValue.dismiss()
+                                    }
+                            } else {
+                                PushView(destination: FolderDetailScreen(dataSource: DocsDataSource(files: item.files))) {
+                                    GridCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                                }
                             }
                         }
                         .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 4))
+                        
                 }
             }
             .padding(.top, 120)
@@ -102,12 +131,13 @@ struct FoldersScreen: View {
         List {
             ForEach(dataSource.folders, id: \.uid) { item in
                 HStack {
-                    PushView(destination: FolderDetailScreen()) {
-                        ListCell(dataSource: FolderCellDataSource(folder: item))
+                    PushView(destination: FolderDetailScreen(dataSource: DocsDataSource(files: item.files))) {
+                        ListCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
                     }
                 }
                 .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 2))
-            }.onDelete(perform: delete)
+            }
+            .onDelete(perform: delete)
         }
         .padding(.top, 90)
         .listStyle(PlainListStyle())
@@ -121,6 +151,6 @@ struct FoldersScreen: View {
 
 struct FoldersScreen_Previews: PreviewProvider {
     static var previews: some View {
-        FoldersScreen()
+        FoldersScreen(selectedFolder: .constant(nil), calledFromSaving: false)
     }
 }

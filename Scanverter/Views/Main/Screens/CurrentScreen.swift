@@ -6,7 +6,7 @@ struct CurrentScreen: View {
     var body: some View {
         VStack {
             if self.currentView == .folders {
-                FoldersScreen()
+                FoldersScreen(selectedFolder: .constant(nil), calledFromSaving: false)
             } else {
                 SettingsScreen()
             }

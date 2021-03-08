@@ -14,7 +14,7 @@ struct MainTabBarView: View {
         NavigationView {
             VStack {
                 CurrentScreen(currentView: self.$currentView)
-                    .fullScreenCover(isPresented: self.$showMicModal, content: ModalScreen.init)
+                    .fullScreenCover(isPresented: self.$showMicModal, content: TextRecognizerScreen.init)
                 TabBar(currentView: self.$currentView,
                        showCameraModal: self.$showCameraModal,
                        showMicModal: self.$showMicModal,

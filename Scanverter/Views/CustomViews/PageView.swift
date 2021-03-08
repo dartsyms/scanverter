@@ -7,7 +7,7 @@ struct PageView_Previews: PreviewProvider {
 }
 
 struct PageView<SelectionValue, Content>: View where SelectionValue: Hashable, Content: View {
-    @Binding private var selection: SelectionValue
+    @Binding var selection: SelectionValue
     private let indexDisplayMode: PageTabViewStyle.IndexDisplayMode
     private let indexBackgroundDisplayMode: PageIndexViewStyle.BackgroundDisplayMode
     private let content: () -> Content
