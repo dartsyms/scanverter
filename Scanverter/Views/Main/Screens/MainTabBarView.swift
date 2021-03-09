@@ -25,7 +25,7 @@ struct MainTabBarView: View {
         }
         .background(Color(.white))
         .navigationViewStyle(StackNavigationViewStyle())
-        .fullScreenCover(isPresented: self.$showSearchModal, content: ModalScreen.init)
+        .fullScreenCover(isPresented: self.$showSearchModal, content: ModalSearchScreen.init)
     }
 }
 

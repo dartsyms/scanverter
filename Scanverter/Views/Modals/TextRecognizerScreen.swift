@@ -24,10 +24,13 @@ struct TextRecognizerScreen: View {
                         .opacity(0)
                     Spacer()
                     scanButton
+                        .opacity(UIDevice.isSimulator ? 0.4 : 1)
+                        .disabled(UIDevice.isSimulator)
                     Spacer()
                     closeButton
                 }
                 .offset(x: -30, y: 0)
+                Text("Not working in simulator!").opacity(UIDevice.isSimulator ? 1 : 0)
                 Spacer()
                 Text(text)
                     .font(.largeTitle)
@@ -48,7 +51,7 @@ struct TextRecognizerScreen: View {
         }
         .frame(width: 40, height: 20)
         .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-        .background(Color(UIColor.systemGray))
+        .background(Color(UIColor.darkGray))
         .cornerRadius(3.0)
     }
     

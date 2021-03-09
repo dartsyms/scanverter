@@ -7,3 +7,13 @@ struct DocFile: Codable {
     var uid: UUID
     var parent: Folder
 }
+
+extension DocFile: Equatable, Hashable {
+    static func == (lhs: DocFile, rhs: DocFile) -> Bool {
+        return lhs.uid == rhs.uid
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(uid)
+    }
+}

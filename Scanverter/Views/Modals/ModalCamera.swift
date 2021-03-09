@@ -44,6 +44,9 @@ struct ModalCamera: View {
                             .foregroundColor(.gray)
                     })
                 }.offset(x: -20, y: -350)
+                Text("Not working in simulator!")
+                    .foregroundColor(.gray)
+                    .opacity(UIDevice.isSimulator ? 1 : 0)
                 PushView(destination: EditorView(dataSource: PhotoCollectionDataSource(scannedDocs: model.scannedDocs), backToCamera: $fromEditor), isActive: $showOneLevelIn) {
                     EmptyView()
                 }.hidden()

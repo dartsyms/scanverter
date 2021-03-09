@@ -1,28 +1,25 @@
 import SwiftUI
 
-struct SettingsScreen: View {
+struct SettingsScreen : View {
+    @ObservedObject var settings = SettingsDataSource()
+    
     var body: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Settings Screen")
-                    .font(.system(size: 20))
-                    .bold()
-                Spacer()
+            Form {
+                Section {
+                    SignInView()
+                }
+                Section {
+                    BluetoothView(bluetooth: settings)
+                    WiFiView(wifi: settings)
+                }
+                ForEach(Option.options,id: \.id) { settingOption in
+                    OptionRow(option: settingOption)
+                }
             }
-            Spacer()
-        }
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color(.purple).opacity(0.2))
-        .navigationBarTitle("Settings", displayMode: .inline)
-        .navigationBarItems(leading: Button(action: {}, label: { }),
-                            trailing: Button(action: {}, label: { }))
-    }
-}
-
-struct SettingsScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsScreen()
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
+            .background(Color(.purple).opacity(0.2))
+            .navigationBarTitle("Settings", displayMode: .inline)
+            .navigationBarItems(leading: Button(action: {}, label: { }),
+                                trailing: Button(action: {}, label: { }))
     }
 }

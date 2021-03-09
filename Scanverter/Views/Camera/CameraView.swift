@@ -106,8 +106,12 @@ struct CameraView: View {
                         capturedPhotoThumbnail
                         Spacer()
                         captureButton
+                            .opacity(UIDevice.isSimulator ? 0.4 : 1)
+                            .disabled(UIDevice.isSimulator)
                         Spacer()
                         flipCameraButton
+                            .opacity(UIDevice.isSimulator ? 0.4 : 1)
+                            .disabled(UIDevice.isSimulator)
                     }
                     .padding(.horizontal, 20)
                     .padding(.bottom, 20)
