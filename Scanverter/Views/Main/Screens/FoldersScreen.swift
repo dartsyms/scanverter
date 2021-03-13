@@ -1,6 +1,12 @@
 import SwiftUI
 import ExyteGrid
 import Combine
+import PopupView
+
+enum UnlockStatus {
+    case failure
+    case success
+}
 
 struct FoldersScreen: View {
     @Environment(\.presentationMode) var presentationMode
@@ -14,6 +20,9 @@ struct FoldersScreen: View {
     @State private var showDeleteAlert: Bool = false
     @State private var offsets: IndexSet?
     @State private var showDeleteIcon: Bool = false
+    
+    @State private var canBeUnlocked: Bool = false
+    @State private var showingBottomFloater = false
     
     @Binding var selectedFolder: Folder?
     var calledFromSaving: Bool = false
@@ -55,14 +64,12 @@ struct FoldersScreen: View {
                                         }
                                         .store(in: &subscriptions)
                             }
-                            .frame(width: geometry.size.width - geometry.size.width/4, height: geometry.size.height - geometry.size.height/2)
-                            .background(Color(UIColor.systemBackground))
-                            .cornerRadius(20).shadow(radius: 20)
+                            .frame(width: geometry.size.width - 20, height: geometry.size.height - geometry.size.height/2)
                         }
                         .navigationBarHidden(true)
                     }
                 }
-                .alert(isPresented: self.$showDeleteAlert) {
+                .alert(isPresented: $showDeleteAlert) {
                     Alert(title: Text("Deletion Alert!"),
                           message: Text("You're about to delete the folder."),
                           primaryButton: .destructive(Text("Delete")) {
@@ -70,6 +77,9 @@ struct FoldersScreen: View {
                           },
                           secondaryButton: .cancel())
                 }
+//                .popup(isPresented: $showingBottomFloater, type: .floater(), position: .bottom, animation: Animation.spring(), autohideIn: 5) {
+//                    createBottomFloater(withStatus: $canBeUnlocked.wrappedValue ? .success : .failure)
+//                }
             }
         }
     }
@@ -111,13 +121,17 @@ struct FoldersScreen: View {
                                         presentationMode.wrappedValue.dismiss()
                                     }
                             } else {
-                                PushView(destination: FolderDetailScreen(dataSource: DocsDataSource(files: item.files))) {
+                                if item.isPasswordProtected && !canBeUnlocked {
                                     GridCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                                        .onTapGesture { unlock() }
+                                } else {
+                                    PushView(destination: FolderDetailScreen(dataSource: DocsDataSource(files: item.files))) {
+                                        GridCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                                    }
                                 }
                             }
                         }
                         .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 4))
-                        
                 }
             }
             .padding(.top, 120)
@@ -130,12 +144,18 @@ struct FoldersScreen: View {
     private var foldersList: some View {
         List {
             ForEach(dataSource.folders, id: \.uid) { item in
-                HStack {
-                    PushView(destination: FolderDetailScreen(dataSource: DocsDataSource(files: item.files))) {
-                        ListCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                if item.isPasswordProtected && !canBeUnlocked {
+                    ListCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                        .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 2))
+                } else {
+                    HStack {
+                        PushView(destination: FolderDetailScreen(dataSource: DocsDataSource(files: item.files))) {
+                            ListCell(dataSource: FolderCellDataSource(folder: item), folderSelector: dataSource.folderSelector)
+                        }
                     }
+                    .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 2))
                 }
-                .padding(EdgeInsets(top: 20, leading: 4, bottom: 0, trailing: 2))
+                
             }
             .onDelete(perform: delete)
         }
@@ -147,6 +167,54 @@ struct FoldersScreen: View {
         self.showDeleteAlert = true
         self.offsets = offsets
     }
+    
+    func unlock() {
+        tryUnlock() {
+            DispatchQueue.main.async {
+                self.dataSource.loadFolders()
+//                self.showingBottomFloater = true
+            }
+        }
+    }
+    
+    private func tryUnlock(completion: @escaping () -> Void) {
+        if !canBeUnlocked {
+            let bioAuthentication = BiometricAuthentication()
+            bioAuthentication.authenticateUser { errorMessage in
+                if errorMessage != nil {
+                    canBeUnlocked = false
+                    completion()
+                } else {
+                    canBeUnlocked = true
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func createBottomFloater(withStatus status: UnlockStatus) -> some View {
+            HStack(spacing: 15) {
+                Image("\(status == .failure ? "error" : "success")")
+                    .resizable()
+                    .aspectRatio(contentMode: ContentMode.fill)
+                    .frame(width: 60, height: 60)
+                    .cornerRadius(10.0)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(status == .failure ? "Unable To Authenticate 😬" : "Secure Access Enabled 😃")")
+                        .foregroundColor(Color(UIColor.label))
+                        .fontWeight(.bold)
+
+                    Text("\(status == .failure ? "The folder is locked." : "To access this folder you will be required to use FaceID/TouchID")")
+                        .font(.system(size: 14))
+                        .foregroundColor(Color(UIColor.label))
+                }
+            }
+            .padding(15)
+            .frame(width: 300, height: 160)
+            .background(Color(hex: "ee6c4d"))
+            .cornerRadius(20.0)
+        }
 }
 
 struct FoldersScreen_Previews: PreviewProvider {

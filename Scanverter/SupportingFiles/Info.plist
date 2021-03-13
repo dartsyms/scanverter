@@ -52,5 +52,7 @@
 	<string>Scanverter needs acces to photo library to save pics.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Scanverter wants to use photo lib additions.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>The app needs access to Face ID to handle folder secure locking feature</string>
 </dict>
 </plist>
