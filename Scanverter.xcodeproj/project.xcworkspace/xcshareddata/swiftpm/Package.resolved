@@ -1,0 +1,52 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "ExyteGrid",
+        "repositoryURL": "https://github.com/exyte/Grid",
+        "state": {
+          "branch": null,
+          "revision": "f6a448eca2188b16ffcc9d42fda39e6a8a62d127",
+          "version": "1.1.0"
+        }
+      },
+      {
+        "package": "libtesseract",
+        "repositoryURL": "https://github.com/SwiftyTesseract/libtesseract.git",
+        "state": {
+          "branch": null,
+          "revision": "d8b5fab45f5dc0b1d34b0ca7bf6620b72426adf1",
+          "version": "0.1.0"
+        }
+      },
+      {
+        "package": "PopupView",
+        "repositoryURL": "https://github.com/dartsyms/PopupView",
+        "state": {
+          "branch": null,
+          "revision": "4cb236c8b8e9de5e93d4ba23354ad64427418935",
+          "version": "0.0.12"
+        }
+      },
+      {
+        "package": "SwiftUIVisualEffects",
+        "repositoryURL": "https://github.com/lucasbrown/swiftui-visual-effects.git",
+        "state": {
+          "branch": null,
+          "revision": "b26f8cebd55ff60ed8953768aa818dfb005b5838",
+          "version": "1.0.3"
+        }
+      },
+      {
+        "package": "SwiftyTesseract",
+        "repositoryURL": "https://github.com/dartsyms/SwiftyTesseract",
+        "state": {
+          "branch": null,
+          "revision": "1b4f0ef0c2ba08ae92254af730f2013af4ebdc4f",
+          "version": "4.0.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
