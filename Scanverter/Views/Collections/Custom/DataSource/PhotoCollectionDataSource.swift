@@ -229,6 +229,19 @@ final class PhotoCollectionDataSource: ObservableObject {
         currentPage = newValue
     }
     
+    func deletePage() {
+        if scannedDocs.isEmpty {
+            return
+        }
+        let index = currentPage - 1 < 0 ? 0 : currentPage - 1
+        scannedDocs.remove(at: index)
+        selectedImages.removeAll()
+        scannedDocs.forEach { self.selectedImages.append(UIImage(cgImage: $0.image)) }
+        if scannedDocs.isEmpty {
+            popToRoot = true
+        }
+    }
+    
     func addPage() {
         guard documentOrigin != nil else { return }
         switch documentOrigin! {

@@ -38,6 +38,7 @@ struct EditToolCell: View {
                 photoDataSource.makeCrop()
             case .delete:
                 print("delete doc")
+                photoDataSource.deletePage()
             case .save(let type):
                 print("save")
                 photoDataSource.save(as: type)

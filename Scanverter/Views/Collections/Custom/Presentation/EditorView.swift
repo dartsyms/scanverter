@@ -112,19 +112,23 @@ struct EditorView: View {
     private var photoPager: some View {
         return VStack {
             PageView(selection: $dataSource.selection, indexBackgroundDisplayMode: .always) {
-                ForEach(dataSource.scannedDocs, id: \.id) { item in
-                        VStack {
-                            EditImageCell(dataSource: EditCellDataSource(scannedDoc: item))
-                            Text(item.date.toString) 
-                                .foregroundColor(Color(UIColor.systemGray))
-                                .font(.headline)
-                        }
-                        .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 4))
-                        .border(Color(UIColor.systemPurple).opacity(0.8), width: 1)
+                if dataSource.scannedDocs.isEmpty {
+                    Text("No more pages")
+                } else {
+                    ForEach(dataSource.scannedDocs, id: \.id) { item in
+                            VStack {
+                                EditImageCell(dataSource: EditCellDataSource(scannedDoc: item))
+                                Text(item.date.toString)
+                                    .foregroundColor(Color(UIColor.systemGray))
+                                    .font(.headline)
+                            }
+                            .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 4))
+                            .border(Color(UIColor.systemPurple).opacity(0.8), width: 1)
+                    }
                 }
            }
-           .padding(.top, 120)
-            Spacer()
+//           .padding(.top, 20)
+//            Spacer()
         }
     }
     
