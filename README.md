@@ -3,7 +3,8 @@
 * captures photos (vision kit vs plain camera as service) 
 * converts them to pdf (and also saves them as images in photo library) 
 * text recognition with tesseract (vision kit's one disabled)
-* SwiftUI, SwiftyTesseract, ExyteGrid
+* SwiftUI with Combine
+* SwiftyTesseract, ExyteGrid
 * MVVM architecture for presentation layer
 * SOA for business logic
 * translation (google) service disabled
@@ -11,4 +12,14 @@
 * iOS 14
 
 ### Screenshots
-
+<img src="./screenshots/main_screen_with_folders.png" width=200 />
+<img src="./screenshots/folder_details.png" width=200 />
+<img src="./screenshots/settings_stubs.png" width=200 />
+<img src="./screenshots/faceid_permission_request.png" width=200 />
+<img src="./screenshots/biomethric_on_folder_locking.png" width=200 />
+<img src="./screenshots/camera_screen.png" width=200 />
+<img src="./screenshots/tesseract_recognition.png" width=200 />
+<img src="./screenshots/recognition_result.png" width=200 />
+<img src="./screenshots/visionkit_scan.png" width=200 />
+<img src="./screenshots/visionkit_result.png" width=200 />
+<img src="./screenshots/visionkit_pdf_view.png" width=200 />
