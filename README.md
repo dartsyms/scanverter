@@ -22,12 +22,12 @@
 	<tr>
 		<td><img src="./screenshots/biomethric_on_folder_locking.png" width=200 /></td>
 		<td><img src="./screenshots/camera_screen.png" width=200 /></td>
-		<td><img src="./screenshots/tesseract_recognition.png" width=200 /><td>
-		<td><img src="./screenshots/recognition_result.png" width=200 /><td>
+		<td><img src="./screenshots/tesseract_recognition.png" width=200 /></td>
+		<td><img src="./screenshots/recognition_result.png" width=200 /></td>
 	</tr>
 	<tr>
-		<td><img src="./screenshots/visionkit_scan.png" width=200 /><td>
-		<td><img src="./screenshots/visionkit_result.png" width=200 /><td>
-		<td><img src="./screenshots/visionkit_pdf_view.png" width=200 /><td>
+		<td><img src="./screenshots/visionkit_scan.png" width=200 /></td>
+		<td><img src="./screenshots/visionkit_result.png" width=200 /></td>
+		<td><img src="./screenshots/visionkit_pdf_view.png" width=200 /></td>
 	</tr>
 </table>
