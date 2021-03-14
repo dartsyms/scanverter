@@ -26,4 +26,6 @@ public struct Constants {
         }
         return docs
     }
+    
+    static let googleTranslationApiKey = "XXX-XXXXXX-XXXXXXXXX"
 }

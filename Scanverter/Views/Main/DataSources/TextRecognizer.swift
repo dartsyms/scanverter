@@ -40,7 +40,7 @@ final class TextRecognizer {
     func generatePdf() {
         let pdfDocument = PDFDocument()
         for i in 0 ..< self.cameraScan.pageCount {
-            if let image = self.cameraScan.imageOfPage(at: i).resize(toWidth: 250){
+            if let image = self.cameraScan.imageOfPage(at: i).resize(toWidth: UIScreen.main.bounds.width - 40) {
                 print("image size is \(image.size.width), \(image.size.height)")
                 let pdfPage = PDFPage(image: image)
                 pdfDocument.insert(pdfPage!, at: i)

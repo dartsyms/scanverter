@@ -13,9 +13,14 @@ struct EditImageCell: View {
         VStack(alignment: .center) {
             Image(uiImage: UIImage(cgImage: dataSource.scannedDoc.image))
                 .resizable()
-                .scaledToFit()
+                .aspectRatio(contentMode: .fit)
                 .padding()
-                .frame(width: UIScreen.main.bounds.width - 20, height: UIScreen.main.bounds.width - 40)
+
+            Text(dataSource.scannedDoc.date.toString)
+                .foregroundColor(Color(UIColor.systemGray))
+                .font(.headline)
         }
+        .padding()
+        .frame(width: UIScreen.main.bounds.width - 40, height: UIScreen.main.bounds.height - 80)
     }
 }

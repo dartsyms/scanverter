@@ -22,7 +22,21 @@ struct EditorView: View {
     var body: some View {
         ZStack {
             VStack {
-                photoPager
+                if dataSource.scannedDocs.isEmpty {
+                    VStack {
+                       HStack(alignment: .center) {
+                           Text($dataSource.pageTitle.wrappedValue)
+                               .foregroundColor(Color(UIColor.label))
+                               .padding(.top, 40)
+                       }
+                       Spacer()
+                   }
+                   .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 4))
+                } else {
+                    PhotoPager(dataSource: dataSource,
+                               cells: .init(array: dataSource.scannedDocs.map({ EditImageCell(dataSource: EditCellDataSource(scannedDoc: $0)) })))
+                }
+                
                 EditorTabBar(dataSource: EditTabBarDataSource(tools: Constants.editTools), photoDataSource: dataSource)
             }
             goBackButton
@@ -70,6 +84,7 @@ struct EditorView: View {
         }
         .onReceive(dataSource.selectionPublisher, perform: { _ in
             dataSource.currentPage = dataSource.selection
+            print("Selection \(dataSource.selection), current page \(dataSource.currentPage)")
         })
         .onDisappear {
             saveRequest?.cancel()
@@ -109,29 +124,6 @@ struct EditorView: View {
         }.offset(x: -275, y: -380)
     }
     
-    private var photoPager: some View {
-        return VStack {
-            PageView(selection: $dataSource.selection, indexBackgroundDisplayMode: .always) {
-                if dataSource.scannedDocs.isEmpty {
-                    Text("No more pages")
-                } else {
-                    ForEach(dataSource.scannedDocs, id: \.id) { item in
-                            VStack {
-                                EditImageCell(dataSource: EditCellDataSource(scannedDoc: item))
-                                Text(item.date.toString)
-                                    .foregroundColor(Color(UIColor.systemGray))
-                                    .font(.headline)
-                            }
-                            .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 4))
-                            .border(Color(UIColor.systemPurple).opacity(0.8), width: 1)
-                    }
-                }
-           }
-//           .padding(.top, 20)
-//            Spacer()
-        }
-    }
-    
     private func savePDFDocOnDismiss(asFileNamed named: String) {
         if let doc = pdfToSave, let folder = folderToSaveIn {
             saveRequest = dataSource.save(pdfDoc: doc, namedAs: named, in: folder)
@@ -143,6 +135,26 @@ struct EditorView: View {
                     print("pdf file saved in folder")
                 }
         }
+    }
+}
+
+struct PhotoPager: View {
+    @ObservedObject var dataSource: PhotoCollectionDataSource
+    @ObservedObject var cells: ObservableArray<EditImageCell>
+    
+    var body: some View {
+        return VStack {
+            HStack(alignment: .center) {
+                Text($dataSource.pageTitle.wrappedValue)
+                    .foregroundColor(Color(UIColor.label))
+                    .padding(.top, 40)
+            }
+            Pager(pages: cells, currentPage: $dataSource.selection)
+                .tabViewStyle(PageTabViewStyle())
+                .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+        }
+        .padding(EdgeInsets(top: 20, leading: 4, bottom: 10, trailing: 4))
+        .border(Color(UIColor.systemPurple).opacity(0.8), width: 1)
     }
 }
 

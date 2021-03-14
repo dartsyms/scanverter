@@ -36,6 +36,18 @@ struct PDFGenerationResult {
     var isPresentingFolderChooser = false
 }
 
+class ObservableArray<T>: ObservableObject {
+    @Published var array: [T]
+    
+    init(array: [T] = .init()) {
+        self.array = array
+    }
+  
+    init(repeating value: T, count: Int) {
+        array = Array(repeating: value, count: count)
+    }
+}
+
 final class PhotoCollectionDataSource: ObservableObject {
     @Injected private var pdfGenerator: DocGenerator
     
@@ -64,6 +76,7 @@ final class PhotoCollectionDataSource: ObservableObject {
             scannedDocs.append(ScannedDoc(image: image!.cgImage!, date: Date()))
             print("Scandocs count \(scannedDocs.count)")
             selectedImages.append(image!)
+            totalPages = scannedDocs.count
         }
         isPresentingImagePicker = false
     }
@@ -109,15 +122,15 @@ final class PhotoCollectionDataSource: ObservableObject {
         }
     }
     
-    var currentPage: Int = 1
+    @Published var currentPage: Int = 0
     private var totalPages: Int = 0 {
         didSet {
-            pageTitle = (1..<2).contains(totalPages) ? "Page 1" : "Page \(currentPage)/\(totalPages)"
+            pageTitle = (1..<2).contains(totalPages) ? "Page 1" : (totalPages == 0 ? "No Pages" : "Page \(currentPage + 1)/\(totalPages)")
         }
     }
     
     public let selectionPublisher = PassthroughSubject<Int, Never>()
-    var selection: Int = 1 {
+    var selection: Int = 0 {
         didSet {
             selectionPublisher.send(1)
         }
@@ -233,8 +246,9 @@ final class PhotoCollectionDataSource: ObservableObject {
         if scannedDocs.isEmpty {
             return
         }
-        let index = currentPage - 1 < 0 ? 0 : currentPage - 1
+        let index = currentPage < 0 ? 0 : currentPage
         scannedDocs.remove(at: index)
+        totalPages = scannedDocs.count
         selectedImages.removeAll()
         scannedDocs.forEach { self.selectedImages.append(UIImage(cgImage: $0.image)) }
         if scannedDocs.isEmpty {
@@ -279,7 +293,7 @@ final class PhotoCollectionDataSource: ObservableObject {
         
         let tesseract = Tesseract(languages: [.english, .russian], engineMode: .default)
         print("Current page \(currentPage)")
-        let index = currentPage - 1
+        let index = currentPage
         tesseract.configure {}
         let image = UIImage(cgImage: scannedDocs[index].image)
         print("Prepare image with index \(index)")

@@ -69,6 +69,11 @@
 		1926680F25EBC8D800A5ABFE /* CustomProgressConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1926680E25EBC8D800A5ABFE /* CustomProgressConfig.swift */; };
 		1926681325EBC99700A5ABFE /* SwiftUIVisualEffects in Frameworks */ = {isa = PBXBuildFile; productRef = 1926681225EBC99700A5ABFE /* SwiftUIVisualEffects */; };
 		196C064A25FD25D900439DBB /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = 196C064925FD25D900439DBB /* PopupView */; };
+		196C064D25FE451D00439DBB /* Pager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196C064C25FE451D00439DBB /* Pager.swift */; };
+		196C065025FE629B00439DBB /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196C064F25FE629B00439DBB /* TranslationService.swift */; };
+		196C065325FE720E00439DBB /* Translation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196C065225FE720E00439DBB /* Translation.swift */; };
+		196C065625FE779A00439DBB /* Detection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196C065525FE779A00439DBB /* Detection.swift */; };
+		196C065925FE7AAE00439DBB /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196C065825FE7AAE00439DBB /* Language.swift */; };
 		1978BCD225D7E3160043572B /* ScanverterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1978BCD125D7E3160043572B /* ScanverterApp.swift */; };
 		1978BCD425D7E3160043572B /* MainTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1978BCD325D7E3160043572B /* MainTabBarView.swift */; };
 		1978BCD625D7E3180043572B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1978BCD525D7E3180043572B /* Assets.xcassets */; };
@@ -151,6 +156,11 @@
 		1926680525EBB89300A5ABFE /* PhotoCollectionDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionDataSource.swift; sourceTree = "<group>"; };
 		1926680B25EBC85C00A5ABFE /* CustomProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomProgressView.swift; sourceTree = "<group>"; };
 		1926680E25EBC8D800A5ABFE /* CustomProgressConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomProgressConfig.swift; sourceTree = "<group>"; };
+		196C064C25FE451D00439DBB /* Pager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pager.swift; sourceTree = "<group>"; };
+		196C064F25FE629B00439DBB /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
+		196C065225FE720E00439DBB /* Translation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Translation.swift; sourceTree = "<group>"; };
+		196C065525FE779A00439DBB /* Detection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Detection.swift; sourceTree = "<group>"; };
+		196C065825FE7AAE00439DBB /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		1978BCCE25D7E3160043572B /* Scanverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scanverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1978BCD125D7E3160043572B /* ScanverterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanverterApp.swift; sourceTree = "<group>"; };
 		1978BCD325D7E3160043572B /* MainTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarView.swift; sourceTree = "<group>"; };
@@ -280,6 +290,9 @@
 				192667B725EACA9800A5ABFE /* Photo.swift */,
 				1926678125EA96B900A5ABFE /* ScannedDoc.swift */,
 				19F7EBA325F685CE0079C0B5 /* Option.swift */,
+				196C065225FE720E00439DBB /* Translation.swift */,
+				196C065525FE779A00439DBB /* Detection.swift */,
+				196C065825FE7AAE00439DBB /* Language.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -290,6 +303,7 @@
 				192667D725EB082F00A5ABFE /* BiometricAuthentication.swift */,
 				192667A225EAC69100A5ABFE /* CameraService.swift */,
 				1926677525EA94B000A5ABFE /* ServiceLocator.swift */,
+				196C064F25FE629B00439DBB /* TranslationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -459,6 +473,7 @@
 				19F7EB9125F57A470079C0B5 /* TextScannerView.swift */,
 				19F7EB9A25F6558D0079C0B5 /* SearchBar.swift */,
 				19F7EBB225F687C90079C0B5 /* ActivityIndicator.swift */,
+				196C064C25FE451D00439DBB /* Pager.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -598,6 +613,7 @@
 				1978BCD425D7E3160043572B /* MainTabBarView.swift in Sources */,
 				19AB4C9225F52D92009895B7 /* DocsDataSource.swift in Sources */,
 				19F7EBAB25F686AB0079C0B5 /* SettingsScreen.swift in Sources */,
+				196C065325FE720E00439DBB /* Translation.swift in Sources */,
 				19F7EB9525F57AAA0079C0B5 /* TextRecognizer.swift in Sources */,
 				1911DCAD25EBE3E8003668F3 /* EditorTabBarDataSource.swift in Sources */,
 				19F7EBA125F656870079C0B5 /* SearchDataSource.swift in Sources */,
@@ -605,6 +621,7 @@
 				1926677B25EA950600A5ABFE /* AppContainer.swift in Sources */,
 				1926675425EA69C300A5ABFE /* ModalScreen.swift in Sources */,
 				192667A925EAC7B800A5ABFE /* CameraPreview.swift in Sources */,
+				196C065625FE779A00439DBB /* Detection.swift in Sources */,
 				1926675D25EA6B4D00A5ABFE /* FoldersScreen.swift in Sources */,
 				1926676C25EA811200A5ABFE /* DataManager.swift in Sources */,
 				1926676025EA6B9400A5ABFE /* ScreenDetails.swift in Sources */,
@@ -626,6 +643,7 @@
 				1926678525EA972400A5ABFE /* PDF.swift in Sources */,
 				19F7EB9225F57A470079C0B5 /* TextScannerView.swift in Sources */,
 				1911DCB525EC35F3003668F3 /* CustomAlert.swift in Sources */,
+				196C065025FE629B00439DBB /* TranslationService.swift in Sources */,
 				1926679725EAA2B800A5ABFE /* ListCell.swift in Sources */,
 				19AB4C9825F540A4009895B7 /* FileCellDataSource.swift in Sources */,
 				192667B825EACA9800A5ABFE /* Photo.swift in Sources */,
@@ -651,6 +669,7 @@
 				1926674025EA594000A5ABFE /* TabBar.swift in Sources */,
 				1911DCA625EBE24F003668F3 /* EditorView.swift in Sources */,
 				1926679B25EAA56200A5ABFE /* CreateFolderView.swift in Sources */,
+				196C065925FE7AAE00439DBB /* Language.swift in Sources */,
 				1912373425ED929F0021EBE4 /* ImagePicker.swift in Sources */,
 				19F7EB9825F57B3B0079C0B5 /* TextRecognizerScreen.swift in Sources */,
 				19F7EBA425F685CE0079C0B5 /* Option.swift in Sources */,
@@ -658,6 +677,7 @@
 				1926675025EA690D00A5ABFE /* Tab.swift in Sources */,
 				19AB4C9E25F547F5009895B7 /* PDFViewer.swift in Sources */,
 				192667B425EAC94E00A5ABFE /* PhotoCaptureHandler.swift in Sources */,
+				196C064D25FE451D00439DBB /* Pager.swift in Sources */,
 				192667D825EB082F00A5ABFE /* BiometricAuthentication.swift in Sources */,
 				192667AD25EAC7FE00A5ABFE /* CameraViewModel.swift in Sources */,
 				1912373A25ED9B1F0021EBE4 /* CustomTextView.swift in Sources */,

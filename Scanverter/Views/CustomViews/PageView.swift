@@ -2,7 +2,7 @@ import SwiftUI
 
 struct PageView_Previews: PreviewProvider {
     static var previews: some View {
-        PageView(content: { Text("Some text") })
+        PageView(selection: .constant(0), content: { Text("Some text") })
     }
 }
 
@@ -31,11 +31,11 @@ struct PageView<SelectionValue, Content>: View where SelectionValue: Hashable, C
 }
 
 extension PageView where SelectionValue == Int {
-    init(indexDisplayMode: PageTabViewStyle.IndexDisplayMode = .automatic,
+    init(selection: Binding<Int>, indexDisplayMode: PageTabViewStyle.IndexDisplayMode = .automatic,
          indexBackgroundDisplayMode: PageIndexViewStyle.BackgroundDisplayMode = .automatic,
          @ViewBuilder content: @escaping () -> Content) {
         
-        self._selection = .constant(0)
+        self._selection = selection
         self.indexDisplayMode = indexDisplayMode
         self.indexBackgroundDisplayMode = indexBackgroundDisplayMode
         self.content = content
