@@ -12,14 +12,22 @@
 * iOS 14
 
 ### Screenshots
-<img src="./screenshots/main_screen_with_folders.png" width=200 />
-<img src="./screenshots/folder_details.png" width=200 />
-<img src="./screenshots/settings_stubs.png" width=200 />
-<img src="./screenshots/faceid_permission_request.png" width=200 />
-<img src="./screenshots/biomethric_on_folder_locking.png" width=200 />
-<img src="./screenshots/camera_screen.png" width=200 />
-<img src="./screenshots/tesseract_recognition.png" width=200 />
-<img src="./screenshots/recognition_result.png" width=200 />
-<img src="./screenshots/visionkit_scan.png" width=200 />
-<img src="./screenshots/visionkit_result.png" width=200 />
-<img src="./screenshots/visionkit_pdf_view.png" width=200 />
+<table>
+  	<tr>
+  		<td><img src="./screenshots/main_screen_with_folders.png" width=200 /></td>
+		<td><img src="./screenshots/folder_details.png" width=200 /></td>
+		<td><img src="./screenshots/settings_stubs.png" width=200 /></td>
+		<td><img src="./screenshots/faceid_permission_request.png" width=200 /></td>
+	</tr>
+	<tr>
+		<td><img src="./screenshots/biomethric_on_folder_locking.png" width=200 /></td>
+		<td><img src="./screenshots/camera_screen.png" width=200 /></td>
+		<td><img src="./screenshots/tesseract_recognition.png" width=200 /><td>
+		<td><img src="./screenshots/recognition_result.png" width=200 /><td>
+	</tr>
+	<tr>
+		<td><img src="./screenshots/visionkit_scan.png" width=200 /><td>
+		<td><img src="./screenshots/visionkit_result.png" width=200 /><td>
+		<td><img src="./screenshots/visionkit_pdf_view.png" width=200 /><td>
+	</tr>
+</table>
